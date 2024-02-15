@@ -28,12 +28,23 @@ class RecyclerViewAdapter(private var coordinates: MutableList<Pair<Float, Float
         holder.editTextX.setText(coordinate.first.toString())
         holder.editTextY.setText(coordinate.second.toString())
 
+        holder.buttonDelete.visibility = if (coordinates.size > 1) View.VISIBLE else View.GONE
+
         holder.buttonDelete.setOnClickListener {
-            coordinates.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, coordinates.size)
+            removeItem(position)
         }
     }
+
+    private fun removeItem(position: Int) {
+        coordinates.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, coordinates.size)
+
+        if (coordinates.size == 1) {
+            notifyItemChanged(0)
+        }
+    }
+
 
     override fun getItemCount(): Int {
         return coordinates.size
@@ -42,6 +53,9 @@ class RecyclerViewAdapter(private var coordinates: MutableList<Pair<Float, Float
     fun addData() {
         coordinates.add(Pair(0.0f, 0.0f))
         notifyItemInserted(coordinates.size - 1)
+        if (coordinates.size == 2) {
+            notifyItemChanged(0)
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
